@@ -5,7 +5,7 @@ namespace Application.Errors
 {
     public class RestException:Exception
     {
-        public RestException(HttpStatusCode code, object errors=null)
+        public RestException(HttpStatusCode code, object errors=null, Domain.UserActivity userActivity = null)
         {
             Code=code;
             Errors = errors;

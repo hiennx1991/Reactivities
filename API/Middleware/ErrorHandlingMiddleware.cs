@@ -1,21 +1,21 @@
 using System;
 using System.Net;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Application.Errors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace API.Middleware
 {
     public class ErrorHandlingMiddleware
     {
-        private readonly ILogger<ErrorHandlingMiddleware> _logger;
         private readonly RequestDelegate _next;
+        private readonly ILogger<ErrorHandlingMiddleware> _logger;
         public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
         {
-            _next = next;
             _logger = logger;
+            _next = next;
         }
 
         public async Task Invoke(HttpContext context)
@@ -23,7 +23,7 @@ namespace API.Middleware
             try
             {
                 await _next(context);
-            }
+            } 
             catch (Exception ex)
             {
                 await HandleExceptionAsync(context, ex, _logger);
@@ -43,14 +43,16 @@ namespace API.Middleware
                     break;
                 case Exception e:
                     logger.LogError(ex, "SERVER ERROR");
-                    errors = string.IsNullOrWhiteSpace(e.Message)?"Error":e.Message;
+                    errors = string.IsNullOrWhiteSpace(e.Message) ? "Error" : e.Message;
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     break;
             }
 
-            context.Response.ContentType="application/json";
-            if(errors!=null){
-                var result = JsonSerializer.Serialize(new{
+            context.Response.ContentType = "application/json";
+            if (errors != null)
+            {
+                var result = JsonConvert.SerializeObject(new 
+                {
                     errors
                 });
 
